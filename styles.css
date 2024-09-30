@@ -21,7 +21,7 @@ h1 {
 
 .product-form {
     display: flex;
-    justify-content: space-between;
+    align-items: center; /* Căn giữa dọc cho các nút */
     margin-bottom: 20px;
 }
 
@@ -34,27 +34,38 @@ h1 {
     transition: border-color 0.3s;
 }
 
-.product-form input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+.product-form button {
+    padding: 8px 12px; /* Giảm kích thước nút */
+    margin-left: 10px; /* Tạo khoảng cách giữa các nút */
+    flex-grow: 1; /* Để nút có thể mở rộng */
+    max-width: 150px; /* Đặt chiều rộng tối đa cho nút */
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-button:hover {
+.product-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.product-btn:hover {
+    background-color: #0056b3;
+}
+
+.upload-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.upload-btn:hover {
     background-color: #0056b3;
 }
 
 .clear-btn {
     background-color: #dc3545;
+    color: white;
 }
 
 .clear-btn:hover {

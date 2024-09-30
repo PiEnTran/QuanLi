@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Sản Phẩm</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script> <!-- Thêm thư viện SheetJS -->
 </head>
 <body>
     <div class="container">
@@ -14,8 +15,10 @@
             <input type="text" id="productName" placeholder="Tên sản phẩm" required>
             <input type="number" id="productPrice" placeholder="Giá (VND)" required>
             <input type="number" id="productQuantity" placeholder="Số lượng" required>
-            <button onclick="addProduct()">Thêm sản phẩm</button>
-            <button onclick="clearLocalStorage()" class="clear-btn">Xóa Tất Cả Dữ Liệu</button> <!-- Nút xóa -->
+            <button onclick="addProduct()" class="product-btn">Thêm sản phẩm</button>
+            <button onclick="document.getElementById('excelFile').click();" class="upload-btn">Tải lên Excel</button> <!-- Nút tải lên Excel -->
+            <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importExcel(event)" class="file-input" style="display: none;" /> <!-- Nút chọn tệp Excel ẩn -->
+            <button onclick="clearLocalStorage()" class="clear-btn">Xóa Tất Cả Dữ Liệu</button> <!-- Nút xóa dữ liệu -->
         </div>
 
         <h2>Danh Sách Sản Phẩm</h2>
@@ -35,9 +38,9 @@
         </table>
 
         <div class="pagination">
-            <button id="prevPage" onclick="prevPage()" class="page-btn">Trước</button>
+            <button id="prevPage" onclick="prevPage()">Trước</button>
             <span id="currentPage">Trang 1</span>
-            <button id="nextPage" onclick="nextPage()" class="page-btn">Sau</button>
+            <button id="nextPage" onclick="nextPage()">Sau</button>
         </div>
 
         <div class="sales-section">
@@ -57,9 +60,9 @@
             </table>
 
             <div class="pagination">
-                <button id="prevSalesPage" onclick="prevSalesPage()" class="page-btn">Trước</button>
+                <button id="prevSalesPage" onclick="prevSalesPage()">Trước</button>
                 <span id="currentSalesPage">Trang 1</span>
-                <button id="nextSalesPage" onclick="nextSalesPage()" class="page-btn">Sau</button>
+                <button id="nextSalesPage" onclick="nextSalesPage()">Sau</button>
             </div>
 
             <h2>Tổng Doanh Thu: <span id="totalRevenue">0 VND</span></h2>
