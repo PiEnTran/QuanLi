@@ -21,25 +21,25 @@ h1 {
 
 .product-form {
     display: flex;
-    align-items: center; /* Căn giữa dọc cho các nút */
+    align-items: center; 
     margin-bottom: 20px;
-    flex-wrap: wrap; /* Cho phép các phần tử xuống hàng trên màn hình nhỏ */
+    flex-wrap: wrap; 
 }
 
 .product-form input {
     margin-right: 10px;
     padding: 10px;
-    width: calc(33% - 20px); /* Tính chiều rộng cho các input */
+    width: calc(33% - 20px); 
     border: 1px solid #ddd;
     border-radius: 4px;
     transition: border-color 0.3s;
 }
 
 .product-form button {
-    padding: 8px 12px; /* Giảm kích thước nút */
-    margin-left: 10px; /* Tạo khoảng cách giữa các nút */
-    flex-grow: 1; /* Để nút có thể mở rộng */
-    max-width: 150px; /* Đặt chiều rộng tối đa cho nút */
+    padding: 8px 12px; 
+    margin-left: 10px; 
+    flex-grow: 1; 
+    max-width: 150px; 
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -71,6 +71,40 @@ h1 {
 
 .clear-btn:hover {
     background-color: #c82333;
+}
+
+.edit-btn, .delete-btn, .sell-btn {
+    background-color: #28a745; /* Màu xanh cho nút chỉnh sửa và bán */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px; /* Kích thước nút */
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s; /* Thêm hiệu ứng biến đổi */
+}
+
+.edit-btn:hover {
+    background-color: #218838; /* Màu tối hơn khi hover */
+    transform: scale(1.05); /* Phóng to nhẹ khi hover */
+}
+
+.delete-btn {
+    background-color: #dc3545; /* Màu đỏ cho nút xóa */
+}
+
+.delete-btn:hover {
+    background-color: #c82333; /* Màu tối hơn khi hover */
+    transform: scale(1.05); /* Phóng to nhẹ khi hover */
+}
+
+.sell-btn {
+    background-color: #ffc107; /* Màu vàng cho nút bán */
+}
+
+.sell-btn:hover {
+    background-color: #e0a800; /* Màu tối hơn khi hover */
+    transform: scale(1.05); /* Phóng to nhẹ khi hover */
 }
 
 table {
