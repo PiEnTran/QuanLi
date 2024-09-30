@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Quản lí</h1>
+
+        <div class="product-form">
+          
+            <input type="text" id="productName" placeholder="Tên sản phẩm">
+            <input type="number" id="productPrice" placeholder="Giá (VND)">
+            <input type="number" id="productQuantity" placeholder="Số lượng">
+            <button onclick="addProduct()">Thêm sản phẩm</button>
+        </div>
+
+        <h2>Danh Sách Sản Phẩm</h2>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá (VND)</th>
+                    <th>Số lượng tồn kho</th>
+                    <th>Doanh thu dự kiến (VND)</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Các sản phẩm sẽ hiển thị tại đây -->
+            </tbody>
+        </table>
+
+        <div class="sales-section">
+          
+         <h2>Lịch Sử Bán Hàng</h2>
+<table id="salesHistoryTable">
+    <thead>
+        <tr>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng đã bán</th>
+            <th>Thành tiền (VND)</th>
+            <th>Thời gian bán</th> <!-- Thêm cột thời gian bán -->
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Lịch sử bán hàng sẽ hiển thị tại đây -->
+    </tbody>
+</table>
+
+        <h2>Tổng Doanh Thu: <span id="totalRevenue">0 VND</span></h2>
+    </div>
+
+
+
+    <script src="script.js"></script>
+</body>
+</html>
