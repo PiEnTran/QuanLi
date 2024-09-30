@@ -12,6 +12,21 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
 });
 
+// Lắng nghe sự kiện storage
+window.addEventListener('storage', (event) => {
+    if (event.key === 'products' || event.key === 'salesHistory' || event.key === 'totalRevenue') {
+        // Cập nhật lại dữ liệu từ Local Storage
+        products = JSON.parse(localStorage.getItem('products')) || [];
+        salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+        totalRevenue = parseFloat(localStorage.getItem('totalRevenue')) || 0;
+
+        // Gọi lại các hàm hiển thị
+        renderProductTable();
+        renderSalesHistory();
+        document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+    }
+});
+
 function addProduct() {
     const productName = document.getElementById('productName').value;
     const productPrice = parseFloat(document.getElementById('productPrice').value);
@@ -29,6 +44,9 @@ function addProduct() {
         localStorage.setItem('products', JSON.stringify(products)); // Lưu vào Local Storage
         renderProductTable();
         clearForm();
+        
+        // Gửi sự kiện để thông báo cho các tab khác
+        window.dispatchEvent(new Event('storage'));
     }
 }
 
@@ -96,6 +114,9 @@ function deleteProduct(index) {
     products.splice(index, 1);
     localStorage.setItem('products', JSON.stringify(products)); // Cập nhật Local Storage
     renderProductTable();
+    
+    // Gửi sự kiện để thông báo cho các tab khác
+    window.dispatchEvent(new Event('storage'));
 }
 
 function editProduct(index) {
@@ -130,6 +151,9 @@ function sellProduct(index) {
         });
         localStorage.setItem('salesHistory', JSON.stringify(salesHistory)); // Lưu lịch sử bán hàng vào Local Storage
         renderSalesHistory();
+
+        // Gửi sự kiện để thông báo cho các tab khác
+        window.dispatchEvent(new Event('storage'));
 
         // Cập nhật số lượng sản phẩm còn lại
         product.quantity -= quantitySold;
@@ -209,6 +233,9 @@ function importExcel(event) {
 
         localStorage.setItem('products', JSON.stringify(products));
         renderProductTable();
+        
+        // Gửi sự kiện để thông báo cho các tab khác
+        window.dispatchEvent(new Event('storage'));
     };
 
     reader.readAsArrayBuffer(file);
@@ -224,4 +251,7 @@ function clearLocalStorage() {
     document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
     renderProductTable();
     renderSalesHistory();
+    
+    // Gửi sự kiện để thông báo cho các tab khác
+    window.dispatchEvent(new Event('storage'));
 }
