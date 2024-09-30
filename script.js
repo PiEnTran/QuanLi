@@ -2,6 +2,10 @@ let products = JSON.parse(localStorage.getItem('products')) || [];
 let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
 let totalRevenue = parseFloat(localStorage.getItem('totalRevenue')) || 0;
 
+const itemsPerPage = 10; // Số sản phẩm và lịch sử trên mỗi trang
+let currentPage = 1;
+let currentSalesPage = 1;
+
 document.addEventListener("DOMContentLoaded", () => {
     renderProductTable();
     renderSalesHistory();
@@ -13,7 +17,7 @@ function addProduct() {
     const productPrice = parseFloat(document.getElementById('productPrice').value);
     const productQuantity = parseInt(document.getElementById('productQuantity').value);
 
-    if (productName && productPrice && productQuantity) {
+    if (productName && !isNaN(productPrice) && !isNaN(productQuantity)) {
         const product = {
             name: productName,
             price: productPrice,
@@ -32,7 +36,12 @@ function renderProductTable() {
     const tableBody = document.querySelector('#productTable tbody');
     tableBody.innerHTML = '';
 
-    products.forEach((product, index) => {
+    // Tính toán chỉ số bắt đầu và kết thúc cho trang hiện tại
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, products.length);
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    paginatedProducts.forEach((product, index) => {
         const row = document.createElement('tr');
         
         row.innerHTML = `
@@ -41,14 +50,18 @@ function renderProductTable() {
             <td>${product.quantity}</td>
             <td>${formatCurrency(product.revenue)}</td>
             <td>
-                <button class="action-btn edit-btn" onclick="editProduct(${index})">Sửa</button>
-                <button class="action-btn delete-btn" onclick="deleteProduct(${index})">Xóa</button>
-                <button class="action-btn" onclick="sellProduct(${index})">Bán</button>
+                <button class="action-btn edit-btn" onclick="editProduct(${startIndex + index})">Sửa</button>
+                <button class="action-btn delete-btn" onclick="deleteProduct(${startIndex + index})">Xóa</button>
+                <button class="action-btn" onclick="sellProduct(${startIndex + index})">Bán</button>
             </td>
         `;
 
         tableBody.appendChild(row);
     });
+
+    document.getElementById('currentPage').textContent = `Trang ${currentPage}`;
+    document.getElementById('prevPage').disabled = currentPage === 1; // Disable nút trước nếu là trang đầu
+    document.getElementById('nextPage').disabled = endIndex >= products.length; // Disable nút sau nếu không còn sản phẩm
 }
 
 function formatCurrency(amount) {
@@ -115,7 +128,12 @@ function renderSalesHistory() {
     const salesTableBody = document.querySelector('#salesHistoryTable tbody');
     salesTableBody.innerHTML = '';
 
-    salesHistory.forEach(sale => {
+    // Tính toán chỉ số bắt đầu và kết thúc cho trang hiện tại
+    const startIndex = (currentSalesPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, salesHistory.length);
+    const paginatedSalesHistory = salesHistory.slice(startIndex, endIndex);
+
+    paginatedSalesHistory.forEach(sale => {
         const row = document.createElement('tr');
 
         row.innerHTML = `
@@ -127,4 +145,38 @@ function renderSalesHistory() {
 
         salesTableBody.appendChild(row);
     });
+
+    document.getElementById('currentSalesPage').textContent = `Trang ${currentSalesPage}`;
+    document.getElementById('prevSalesPage').disabled = currentSalesPage === 1; // Disable nút trước nếu là trang đầu
+    document.getElementById('nextSalesPage').disabled = endIndex >= salesHistory.length; // Disable nút sau nếu không còn lịch sử
+}
+
+// Hàm chuyển trang cho danh sách sản phẩm
+function nextPage() {
+    if ((currentPage * itemsPerPage) < products.length) {
+        currentPage++;
+        renderProductTable();
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderProductTable();
+    }
+}
+
+// Hàm chuyển trang cho lịch sử bán hàng
+function nextSalesPage() {
+    if ((currentSalesPage * itemsPerPage) < salesHistory.length) {
+        currentSalesPage++;
+        renderSalesHistory();
+    }
+}
+
+function prevSalesPage() {
+    if (currentSalesPage > 1) {
+        currentSalesPage--;
+        renderSalesHistory();
+    }
 }
