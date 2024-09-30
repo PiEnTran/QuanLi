@@ -23,12 +23,13 @@ h1 {
     display: flex;
     align-items: center; /* Căn giữa dọc cho các nút */
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Cho phép các phần tử xuống hàng trên màn hình nhỏ */
 }
 
 .product-form input {
     margin-right: 10px;
     padding: 10px;
-    width: calc(33% - 20px);
+    width: calc(33% - 20px); /* Tính chiều rộng cho các input */
     border: 1px solid #ddd;
     border-radius: 4px;
     transition: border-color 0.3s;
@@ -116,4 +117,27 @@ th {
 
 .sales-section h2 {
     margin-top: 20px;
+}
+
+/* Media queries cho thiết bị di động */
+@media (max-width: 600px) {
+    .product-form {
+        flex-direction: column; /* Đặt các phần tử theo cột */
+        align-items: flex-start; /* Căn lề trái */
+    }
+
+    .product-form input,
+    .product-form button {
+        width: 100%; /* Đặt chiều rộng 100% cho các phần tử */
+        margin-bottom: 10px; /* Tạo khoảng cách giữa các phần tử */
+    }
+
+    h1 {
+        font-size: 24px; /* Giảm kích thước chữ tiêu đề */
+    }
+
+    .product-btn, .upload-btn, .clear-btn {
+        max-width: 100%; /* Nút sẽ có chiều rộng 100% trên màn hình nhỏ */
+        margin: 5px 0; /* Tạo khoảng cách giữa các nút */
+    }
 }
