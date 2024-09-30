@@ -19,6 +19,20 @@ h1 {
     color: #333;
 }
 
+.search-bar {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar input {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 .product-form {
     display: flex;
     align-items: center;
@@ -44,33 +58,12 @@ h1 {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-.product-btn {
     background-color: #007bff;
     color: white;
 }
 
-.product-btn:hover {
+.product-form button:hover {
     background-color: #0056b3;
-}
-
-.upload-btn {
-    background-color: #007bff;
-    color: white;
-}
-
-.upload-btn:hover {
-    background-color: #0056b3;
-}
-
-.clear-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.clear-btn:hover {
-    background-color: #c82333;
 }
 
 table {
@@ -109,35 +102,4 @@ th {
 
 .page-btn:hover {
     background-color: #0056b3;
-}
-
-.sales-section {
-    margin-top: 20px;
-}
-
-.sales-section h2 {
-    margin-top: 20px;
-}
-
-/* Media queries cho thiết bị di động */
-@media (max-width: 600px) {
-    .product-form {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .product-form input,
-    .product-form button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    h1 {
-        font-size: 24px;
-    }
-
-    .product-btn, .upload-btn, .clear-btn {
-        max-width: 100%;
-        margin: 5px 0;
-    }
 }
