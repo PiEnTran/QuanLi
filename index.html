@@ -5,25 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Sản Phẩm</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Quản Lý Sản Phẩm</h1>
 
-        <!-- Thanh tìm kiếm sản phẩm -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="searchProduct()">
-        </div>
-
-        <!-- Form nhập sản phẩm mới -->
         <div class="product-form">
             <input type="text" id="productName" placeholder="Tên sản phẩm" required>
             <input type="number" id="productPrice" placeholder="Giá (VND)" required>
             <input type="number" id="productQuantity" placeholder="Số lượng" required>
             <button onclick="addProduct()" class="product-btn">Thêm sản phẩm</button>
+            <button onclick="document.getElementById('excelFile').click();" class="upload-btn">Tải lên Excel</button>
+            <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importExcel(event)" class="file-input" style="display: none;" />
+            <button onclick="resetSalesHistory()" class="clear-btn">Xóa Lịch Sử Bán Hàng</button>
         </div>
 
-        <!-- Bảng danh sách sản phẩm -->
         <h2>Danh Sách Sản Phẩm</h2>
         <table id="productTable">
             <thead>
@@ -36,11 +33,48 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Sản phẩm sẽ hiển thị tại đây -->
+                <!-- Các sản phẩm sẽ hiển thị tại đây -->
             </tbody>
         </table>
+
+        <div class="pagination">
+            <button id="prevPage" onclick="prevPage()">Trước</button>
+            <span id="currentPage">Trang 1</span>
+            <button id="nextPage" onclick="nextPage()">Sau</button>
+        </div>
+
+        <div class="sales-section">
+            <h2>Lịch Sử</h2>
+            <table id="salesHistoryTable">
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng đã bán</th>
+                        <th>Thành tiền (VND)</th>
+                        <th>Thời gian bán</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Lịch sử bán hàng sẽ hiển thị tại đây -->
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <button id="prevSalesPage" onclick="prevSalesPage()">Trước</button>
+                <span id="currentSalesPage">Trang 1</span>
+                <button id="nextSalesPage" onclick="nextSalesPage()">Sau</button>
+            </div>
+            <h2>Tổng Doanh Thu: <span id="totalRevenue">0 VND</span></h2>
+
+        </div>
+
     </div>
 
+
+
     <script src="script.js"></script>
+
 </body>
+
 </html>
