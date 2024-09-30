@@ -11,7 +11,6 @@
         <h1>Quản lí</h1>
 
         <div class="product-form">
-          
             <input type="text" id="productName" placeholder="Tên sản phẩm">
             <input type="number" id="productPrice" placeholder="Giá (VND)">
             <input type="number" id="productQuantity" placeholder="Số lượng">
@@ -34,27 +33,39 @@
             </tbody>
         </table>
 
+        <!-- Thêm phần nút chuyển trang cho sản phẩm -->
+        <div class="pagination">
+            <button id="prevPage" onclick="prevPage()">Trước</button>
+            <span id="currentPage">Trang 1</span>
+            <button id="nextPage" onclick="nextPage()">Sau</button>
+        </div>
+
         <div class="sales-section">
-          
-         <h2>Lịch Sử </h2>
-<table id="salesHistoryTable">
-    <thead>
-        <tr>
-            <th>Tên sản phẩm</th>
-            <th>Số lượng đã bán</th>
-            <th>Thành tiền (VND)</th>
-            <th>Thời gian bán</th> <!-- Thêm cột thời gian bán -->
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Lịch sử bán hàng sẽ hiển thị tại đây -->
-    </tbody>
-</table>
+            <h2>Lịch Sử</h2>
+            <table id="salesHistoryTable">
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng đã bán</th>
+                        <th>Thành tiền (VND)</th>
+                        <th>Thời gian bán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Lịch sử bán hàng sẽ hiển thị tại đây -->
+                </tbody>
+            </table>
 
-        <h2>Tổng Doanh Thu: <span id="totalRevenue">0 VND</span></h2>
+            <!-- Thêm phần nút chuyển trang cho lịch sử -->
+            <div class="pagination">
+                <button id="prevSalesPage" onclick="prevSalesPage()">Trước</button>
+                <span id="currentSalesPage">Trang 1</span>
+                <button id="nextSalesPage" onclick="nextSalesPage()">Sau</button>
+            </div>
+
+            <h2>Tổng Doanh Thu: <span id="totalRevenue">0 VND</span></h2>
+        </div>
     </div>
-
-
 
     <script src="script.js"></script>
 </body>
