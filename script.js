@@ -2,14 +2,17 @@ let products = JSON.parse(localStorage.getItem('products')) || [];
 let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
 let totalRevenue = parseFloat(localStorage.getItem('totalRevenue')) || 0;
 
-const itemsPerPage = 10; // Số sản phẩm và lịch sử trên mỗi trang
 let currentPage = 1;
+const productsPerPage = 10;
 let currentSalesPage = 1;
+const salesPerPage = 10;
 
 document.addEventListener("DOMContentLoaded", () => {
     renderProductTable();
     renderSalesHistory();
     document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+    updatePageInfo();
+    updateSalesPageInfo();
 });
 
 function addProduct() {
@@ -17,7 +20,7 @@ function addProduct() {
     const productPrice = parseFloat(document.getElementById('productPrice').value);
     const productQuantity = parseInt(document.getElementById('productQuantity').value);
 
-    if (productName && !isNaN(productPrice) && !isNaN(productQuantity)) {
+    if (productName && productPrice && productQuantity) {
         const product = {
             name: productName,
             price: productPrice,
@@ -26,7 +29,7 @@ function addProduct() {
         };
 
         products.push(product);
-        localStorage.setItem('products', JSON.stringify(products)); // Lưu vào Local Storage
+        localStorage.setItem('products', JSON.stringify(products));
         renderProductTable();
         clearForm();
     }
@@ -36,12 +39,11 @@ function renderProductTable() {
     const tableBody = document.querySelector('#productTable tbody');
     tableBody.innerHTML = '';
 
-    // Tính toán chỉ số bắt đầu và kết thúc cho trang hiện tại
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, products.length);
-    const paginatedProducts = products.slice(startIndex, endIndex);
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const currentProducts = products.slice(startIndex, endIndex);
 
-    paginatedProducts.forEach((product, index) => {
+    currentProducts.forEach((product, index) => {
         const row = document.createElement('tr');
         
         row.innerHTML = `
@@ -59,9 +61,7 @@ function renderProductTable() {
         tableBody.appendChild(row);
     });
 
-    document.getElementById('currentPage').textContent = `Trang ${currentPage}`;
-    document.getElementById('prevPage').disabled = currentPage === 1; // Disable nút trước nếu là trang đầu
-    document.getElementById('nextPage').disabled = endIndex >= products.length; // Disable nút sau nếu không còn sản phẩm
+    updatePageInfo();
 }
 
 function formatCurrency(amount) {
@@ -76,7 +76,7 @@ function clearForm() {
 
 function deleteProduct(index) {
     products.splice(index, 1);
-    localStorage.setItem('products', JSON.stringify(products)); // Cập nhật Local Storage
+    localStorage.setItem('products', JSON.stringify(products));
     renderProductTable();
 }
 
@@ -97,28 +97,25 @@ function sellProduct(index) {
     if (quantitySold > 0 && quantitySold <= product.quantity) {
         const soldRevenue = product.price * quantitySold;
         
-        // Cập nhật tổng doanh thu
         totalRevenue += soldRevenue;
-        localStorage.setItem('totalRevenue', totalRevenue); // Lưu tổng doanh thu vào Local Storage
+        localStorage.setItem('totalRevenue', totalRevenue);
         document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
         
-        // Thêm vào lịch sử bán hàng với thời gian hiện tại
-        const saleTime = new Date().toLocaleString(); // Lấy thời gian bán
+        const saleTime = new Date().toLocaleString();
         salesHistory.push({
             name: product.name,
             quantity: quantitySold,
             total: soldRevenue,
             time: saleTime
         });
-        localStorage.setItem('salesHistory', JSON.stringify(salesHistory)); // Lưu lịch sử bán hàng vào Local Storage
+        localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
         renderSalesHistory();
 
-        // Cập nhật số lượng sản phẩm còn lại
         product.quantity -= quantitySold;
         if (product.quantity === 0) {
             deleteProduct(index);
         } else {
-            localStorage.setItem('products', JSON.stringify(products)); // Cập nhật Local Storage
+            localStorage.setItem('products', JSON.stringify(products));
             renderProductTable();
         }
     }
@@ -128,12 +125,11 @@ function renderSalesHistory() {
     const salesTableBody = document.querySelector('#salesHistoryTable tbody');
     salesTableBody.innerHTML = '';
 
-    // Tính toán chỉ số bắt đầu và kết thúc cho trang hiện tại
-    const startIndex = (currentSalesPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, salesHistory.length);
-    const paginatedSalesHistory = salesHistory.slice(startIndex, endIndex);
+    const startIndex = (currentSalesPage - 1) * salesPerPage;
+    const endIndex = startIndex + salesPerPage;
+    const currentSales = salesHistory.slice(startIndex, endIndex);
 
-    paginatedSalesHistory.forEach(sale => {
+    currentSales.forEach(sale => {
         const row = document.createElement('tr');
 
         row.innerHTML = `
@@ -146,14 +142,25 @@ function renderSalesHistory() {
         salesTableBody.appendChild(row);
     });
 
-    document.getElementById('currentSalesPage').textContent = `Trang ${currentSalesPage}`;
-    document.getElementById('prevSalesPage').disabled = currentSalesPage === 1; // Disable nút trước nếu là trang đầu
-    document.getElementById('nextSalesPage').disabled = endIndex >= salesHistory.length; // Disable nút sau nếu không còn lịch sử
+    updateSalesPageInfo();
 }
 
-// Hàm chuyển trang cho danh sách sản phẩm
+function clearLocalStorage() {
+    localStorage.clear();
+    products = [];
+    salesHistory = [];
+    totalRevenue = 0;
+    document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+    renderProductTable();
+    renderSalesHistory();
+}
+
+function updatePageInfo() {
+    document.getElementById('currentPage').textContent = `Trang ${currentPage}`;
+}
+
 function nextPage() {
-    if ((currentPage * itemsPerPage) < products.length) {
+    if (currentPage < Math.ceil(products.length / productsPerPage)) {
         currentPage++;
         renderProductTable();
     }
@@ -166,9 +173,12 @@ function prevPage() {
     }
 }
 
-// Hàm chuyển trang cho lịch sử bán hàng
+function updateSalesPageInfo() {
+    document.getElementById('currentSalesPage').textContent = `Trang ${currentSalesPage}`;
+}
+
 function nextSalesPage() {
-    if ((currentSalesPage * itemsPerPage) < salesHistory.length) {
+    if (currentSalesPage < Math.ceil(salesHistory.length / salesPerPage)) {
         currentSalesPage++;
         renderSalesHistory();
     }

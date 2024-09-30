@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test</title>
+    <title>Quản Lý Sản Phẩm</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Quản lí</h1>
+        <h1>Quản Lý Sản Phẩm</h1>
 
         <div class="product-form">
-            <input type="text" id="productName" placeholder="Tên sản phẩm">
-            <input type="number" id="productPrice" placeholder="Giá (VND)">
-            <input type="number" id="productQuantity" placeholder="Số lượng">
+            <input type="text" id="productName" placeholder="Tên sản phẩm" required>
+            <input type="number" id="productPrice" placeholder="Giá (VND)" required>
+            <input type="number" id="productQuantity" placeholder="Số lượng" required>
             <button onclick="addProduct()">Thêm sản phẩm</button>
+            <button onclick="clearLocalStorage()" class="clear-btn">Xóa Tất Cả Dữ Liệu</button> <!-- Nút xóa -->
         </div>
 
         <h2>Danh Sách Sản Phẩm</h2>
@@ -33,11 +34,10 @@
             </tbody>
         </table>
 
-        <!-- Thêm phần nút chuyển trang cho sản phẩm -->
         <div class="pagination">
-            <button id="prevPage" onclick="prevPage()">Trước</button>
+            <button id="prevPage" onclick="prevPage()" class="page-btn">Trước</button>
             <span id="currentPage">Trang 1</span>
-            <button id="nextPage" onclick="nextPage()">Sau</button>
+            <button id="nextPage" onclick="nextPage()" class="page-btn">Sau</button>
         </div>
 
         <div class="sales-section">
@@ -56,11 +56,10 @@
                 </tbody>
             </table>
 
-            <!-- Thêm phần nút chuyển trang cho lịch sử -->
             <div class="pagination">
-                <button id="prevSalesPage" onclick="prevSalesPage()">Trước</button>
+                <button id="prevSalesPage" onclick="prevSalesPage()" class="page-btn">Trước</button>
                 <span id="currentSalesPage">Trang 1</span>
-                <button id="nextSalesPage" onclick="nextSalesPage()">Sau</button>
+                <button id="nextSalesPage" onclick="nextSalesPage()" class="page-btn">Sau</button>
             </div>
 
             <h2>Tổng Doanh Thu: <span id="totalRevenue">0 VND</span></h2>
