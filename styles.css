@@ -21,25 +21,25 @@ h1 {
 
 .product-form {
     display: flex;
-    align-items: center; 
+    align-items: center;
     margin-bottom: 20px;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
 }
 
 .product-form input {
     margin-right: 10px;
     padding: 10px;
-    width: calc(33% - 20px); 
+    width: calc(33% - 20px);
     border: 1px solid #ddd;
     border-radius: 4px;
     transition: border-color 0.3s;
 }
 
 .product-form button {
-    padding: 8px 12px; 
-    margin-left: 10px; 
-    flex-grow: 1; 
-    max-width: 150px; 
+    padding: 8px 12px;
+    margin-left: 10px;
+    flex-grow: 1;
+    max-width: 150px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -71,40 +71,6 @@ h1 {
 
 .clear-btn:hover {
     background-color: #c82333;
-}
-
-.edit-btn, .delete-btn, .sell-btn {
-    background-color: #28a745; /* Màu xanh cho nút chỉnh sửa và bán */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px; /* Kích thước nút */
-    margin: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s; /* Thêm hiệu ứng biến đổi */
-}
-
-.edit-btn:hover {
-    background-color: #218838; /* Màu tối hơn khi hover */
-    transform: scale(1.05); /* Phóng to nhẹ khi hover */
-}
-
-.delete-btn {
-    background-color: #dc3545; /* Màu đỏ cho nút xóa */
-}
-
-.delete-btn:hover {
-    background-color: #c82333; /* Màu tối hơn khi hover */
-    transform: scale(1.05); /* Phóng to nhẹ khi hover */
-}
-
-.sell-btn {
-    background-color: #ffc107; /* Màu vàng cho nút bán */
-}
-
-.sell-btn:hover {
-    background-color: #e0a800; /* Màu tối hơn khi hover */
-    transform: scale(1.05); /* Phóng to nhẹ khi hover */
 }
 
 table {
@@ -156,22 +122,22 @@ th {
 /* Media queries cho thiết bị di động */
 @media (max-width: 600px) {
     .product-form {
-        flex-direction: column; /* Đặt các phần tử theo cột */
-        align-items: flex-start; /* Căn lề trái */
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .product-form input,
     .product-form button {
-        width: 100%; /* Đặt chiều rộng 100% cho các phần tử */
-        margin-bottom: 10px; /* Tạo khoảng cách giữa các phần tử */
+        width: 100%;
+        margin-bottom: 10px;
     }
 
     h1 {
-        font-size: 24px; /* Giảm kích thước chữ tiêu đề */
+        font-size: 24px;
     }
 
     .product-btn, .upload-btn, .clear-btn {
-        max-width: 100%; /* Nút sẽ có chiều rộng 100% trên màn hình nhỏ */
-        margin: 5px 0; /* Tạo khoảng cách giữa các nút */
+        max-width: 100%;
+        margin: 5px 0;
     }
 }

@@ -18,7 +18,7 @@
             <button onclick="addProduct()" class="product-btn">Thêm sản phẩm</button>
             <button onclick="document.getElementById('excelFile').click();" class="upload-btn">Tải lên Excel</button>
             <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importExcel(event)" class="file-input" style="display: none;" />
-            <button onclick="clearLocalStorage()" class="clear-btn">Xóa Tất Cả Dữ Liệu</button>
+            <button onclick="resetSalesHistory()" class="clear-btn">Xóa Lịch Sử Bán Hàng</button>
         </div>
 
         <h2>Danh Sách Sản Phẩm</h2>
@@ -52,6 +52,7 @@
                         <th>Số lượng đã bán</th>
                         <th>Thành tiền (VND)</th>
                         <th>Thời gian bán</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
