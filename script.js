@@ -1,4 +1,3 @@
-
 let products = [];
 let salesHistory = [];
 let currentPage = 1;
@@ -70,42 +69,35 @@ function loadProducts() {
     }
 }
 
-function sellProduct(index) {
-    const quantityToSell = parseInt(prompt("Nhập số lượng muốn bán:"));
-    if (quantityToSell > products[index].quantity) {
-        alert("Số lượng bán vượt quá số lượng tồn kho.");
-        return;
-    }
-
-    const sale = {
-        name: products[index].name,
-        quantity: quantityToSell,
-        total: products[index].price * quantityToSell,
-
-
-time: new Date().toLocaleString(),
-    };
-
-    salesHistory.push(sale);
-    products[index].quantity -= quantityToSell;
-    saveProducts();
-    saveSalesHistory();
-    loadProducts();
-    loadSalesHistory();
+function saveProducts() {
+    localStorage.setItem('products', JSON.stringify(products));
 }
 
-function editProduct(index) {
-    const name = prompt("Nhập tên sản phẩm mới:", products[index].name);
-    const price = parseFloat(prompt("Nhập giá mới (VND):", products[index].price));
-    const quantity = parseInt(prompt("Nhập số lượng mới:", products[index].quantity));
+function searchProduct() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filteredProducts = products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm)
+    );
+    renderProducts(filteredProducts);
+}
 
-    if (name && price > 0 && quantity >= 0) {
-        products[index] = { name, price, quantity };
-        saveProducts();
-        loadProducts();
-    } else {
-        alert("Vui lòng nhập thông tin hợp lệ.");
-    }
+function renderProducts(productList) {
+    const tbody = document.querySelector("#productTable tbody");
+    tbody.innerHTML = "";
+    productList.forEach((product, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${product.name}</td>
+            <td>${product.price}</td>
+            <td>${product.quantity}</td>
+            <td>${product.price * product.quantity}</td>
+            <td>
+                <button onclick="sellProduct(${index})">Bán</button>
+                <button onclick="editProduct(${index})">Chỉnh sửa</button>
+                <button onclick="deleteProduct(${index})">Xóa</button>
+            </td>
+        `;
+    });
 }
 
 function deleteProduct(index) {
@@ -114,29 +106,62 @@ function deleteProduct(index) {
     loadProducts();
 }
 
-function saveProducts() {
-    localStorage.setItem('products', JSON.stringify(products));
+function editProduct(index) {
+    const product = products[index];
+    const newName = prompt("Tên sản phẩm mới:", product.name);
+    const newPrice = parseFloat(prompt("Giá mới (VND):", product.price));
+    const newQuantity = parseInt(prompt("Số lượng mới:", product.quantity));
+
+    if (newName && newPrice > 0 && newQuantity > 0) {
+        products[index] = { name: newName, price: newPrice, quantity: newQuantity };
+        saveProducts();
+        loadProducts();
+    } else {
+        alert("Thông tin sản phẩm không hợp lệ.");
+    }
 }
 
-function saveSalesHistory() {
-    localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+function sellProduct(index) {
+    const product = products[index];
+    const soldQuantity = parseInt(prompt("Nhập số lượng bán:"));
+
+    if (soldQuantity > 0 && soldQuantity <= product.quantity) {
+        const revenue = soldQuantity * product.price;
+        product.quantity -= soldQuantity;
+
+        const sale = {
+            name: product.name,
+            quantity: soldQuantity,
+            revenue: revenue,
+            time: new Date().toLocaleString()
+        };
+        salesHistory.push(sale);
+        saveSalesHistory();
+        loadProducts();
+        loadSalesHistory();
+    } else {
+        alert("Số lượng bán không hợp lệ.");
+    }
 }
 
 function loadSalesHistory() {
     const tbody = document.querySelector("#salesHistoryTable tbody");
     tbody.innerHTML = "";
-    
     salesHistory.forEach((sale, index) => {
         const row = tbody.insertRow();
         row.innerHTML = `
             <td>${sale.name}</td>
             <td>${sale.quantity}</td>
-            <td>${sale.total}</td>
+            <td>${sale.revenue}</td>
             <td>${sale.time}</td>
             <td><button onclick="deleteSale(${index})">Xóa</button></td>
         `;
     });
     updateTotalRevenue();
+}
+
+function saveSalesHistory() {
+    localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
 }
 
 function deleteSale(index) {
@@ -146,39 +171,84 @@ function deleteSale(index) {
 }
 
 function resetSalesHistory() {
-    if (confirm("Bạn có chắc chắn muốn xóa lịch sử bán hàng không?")) {
-        salesHistory = [];
-        saveSalesHistory();
-        loadSalesHistory();
-    }
+    salesHistory = [];
+    saveSalesHistory();
+    loadSalesHistory();
 }
 
 function updateTotalRevenue() {
-    const totalRevenue = salesHistory.reduce((acc, sale) => acc + sale.total, 0);
-    document.getElementById("totalRevenue").innerText = `${totalRevenue} VND`;
-}
-
-// Hàm quản lý phân trang
-function nextPage() {
-    if (currentPage * itemsPerPage < products.length) {
-        currentPage++;
-        loadProducts();
-        document.getElementById('currentPage').innerText = `Trang ${currentPage}`;
-    }
+    const totalRevenue = salesHistory.reduce((total, sale) => total + sale.revenue, 0);
+    document.getElementById("totalRevenue").textContent = `${totalRevenue} VND`;
 }
 
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
         loadProducts();
-        document.getElementById('currentPage').innerText = `Trang ${currentPage}`;
+        document.getElementById("currentPage").textContent = `Trang ${currentPage}`;
     }
 }
 
-// Tải dữ liệu từ localStorage khi tải trang
+function nextPage() {
+    if (currentPage * itemsPerPage < products.length) {
+        currentPage++;
+        loadProducts();
+        document.getElementById("currentPage").textContent = `Trang ${currentPage}`;
+    }
+}
+
+function prevSalesPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        loadSalesHistory();
+        document.getElementById("currentSalesPage").textContent = `Trang ${currentPage}`;
+    }
+}
+
+function nextSalesPage() {
+    if (currentPage * itemsPerPage < salesHistory.length) {
+        currentPage++;
+        loadSalesHistory();
+        document.getElementById("currentSalesPage").textContent = `Trang ${currentPage}`;
+    }
+}
+function exportSalesToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Thiết lập tiêu đề cho PDF
+    doc.setFontSize(16);
+    doc.text("Lịch Sử Bán Hàng", 10, 10);
+    doc.setFontSize(12);
+
+    // Thêm tiêu đề các cột
+    doc.text("Tên sản phẩm", 10, 20);
+    doc.text("Số lượng đã bán", 60, 20);
+    doc.text("Thành tiền (VND)", 110, 20);
+    doc.text("Thời gian bán", 160, 20);
+
+    let yPos = 30; // Vị trí Y khởi đầu cho dữ liệu
+
+    salesHistory.forEach((sale, index) => {
+        // Thêm dữ liệu cho mỗi dòng lịch sử bán hàng
+        doc.text(sale.name, 10, yPos);
+        doc.text(sale.quantity.toString(), 60, yPos);
+        doc.text(sale.revenue.toString(), 110, yPos);
+        doc.text(sale.time, 160, yPos);
+
+        yPos += 10; // Tăng vị trí Y cho dòng tiếp theo
+    });
+
+    // Xuất PDF
+    doc.save("Lich_Su_Ban_Hang.pdf");
+}
+
 window.onload = function () {
+    // Tải danh sách sản phẩm từ localStorage
     products = JSON.parse(localStorage.getItem('products')) || [];
     salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+    
+    // Hiển thị lại danh sách sản phẩm và lịch sử bán hàng
     loadProducts();
     loadSalesHistory();
 };
