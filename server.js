@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const mysql = require('mysql2');
 const app = express();
 
 // Middleware
@@ -13,6 +14,23 @@ mongoose.connect('mongodb://localhost:27017/productManagement', {
     useUnifiedTopology: true,
 });
 
+// Kết nối tới MySQL
+const connection = mysql.createConnection({
+    host: 'localhost', // Địa chỉ của MySQL server
+    user: 'PiEn',      // Tên đăng nhập MySQL
+    password: '1234567',// Mật khẩu MySQL
+    database: 'product_management' // Tên cơ sở dữ liệu
+});
+
+connection.connect((err) => {
+    if (err) {
+        console.error('Error connecting: ' + err.stack);
+        return;
+    }
+    console.log('Connected to MySQL as id ' + connection.threadId);
+});
+
+// Định nghĩa schema cho MongoDB
 const productSchema = new mongoose.Schema({
     name: String,
     quantity: Number,
@@ -21,51 +39,31 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
-// API lấy danh sách sản phẩm
+// API lấy danh sách sản phẩm từ MySQL
 app.get('/products', async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).send('Error loading products: ' + error.message);
-    }
+    const query = `SELECT * FROM products`;
+    connection.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).send('Error loading products: ' + err.message);
+        }
+        res.status(200).json(results);
+    });
 });
 
-// API thêm sản phẩm
+// API thêm sản phẩm vào MySQL
 app.post('/products', async (req, res) => {
-    try {
-        const { name, quantity, price } = req.body;
-        const newProduct = new Product({ name, quantity, price });
-        await newProduct.save();
-        res.status(201).json(newProduct);
-    } catch (error) {
-        res.status(500).send('Error adding product: ' + error.message);
-    }
+    const { name, quantity, price } = req.body;
+    const query = `INSERT INTO products (name, price, quantity) VALUES (?, ?, ?)`;
+    connection.query(query, [name, price, quantity], (err, results) => {
+        if (err) {
+            return res.status(500).send('Error adding product: ' + err.message);
+        }
+        res.status(201).json({ id: results.insertId, name, quantity, price });
+    });
 });
 
-// API chỉnh sửa sản phẩm
-app.put('/products/:id', async (req, res) => {
-    try {
-        const { quantity } = req.body;
-        const updatedProduct = await Product.findByIdAndUpdate(
-            req.params.id, { quantity }, { new: true });
-        res.status(200).json(updatedProduct);
-    } catch (error) {
-        res.status(500).send('Error updating product: ' + error.message);
-    }
-});
-
-// API xóa sản phẩm
-app.delete('/products/:id', async (req, res) => {
-    try {
-        await Product.findByIdAndDelete(req.params.id);
-        res.status(200).send('Product deleted');
-    } catch (error) {
-        res.status(500).send('Error deleting product: ' + error.message);
-    }
-});
-
-// Chạy server
-app.listen(5000, () => {
-    console.log('Server running on http://localhost:5000');
+// Bắt đầu server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

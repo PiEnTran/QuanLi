@@ -3,6 +3,7 @@ let salesHistory = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 
+// Thêm sản phẩm
 function addProduct() {
     const name = document.getElementById('productName').value;
     const price = parseFloat(document.getElementById('productPrice').value);
@@ -19,17 +20,18 @@ function addProduct() {
     loadProducts();
 }
 
+// Nhập sản phẩm từ file Excel
 function importExcel(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
-    
+
     reader.onload = function(e) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, {type: 'array'});
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-        
+
         jsonData.forEach((row, index) => {
             if (index === 0) return; // Bỏ qua hàng tiêu đề
             const [name, price, quantity] = row;
@@ -46,6 +48,7 @@ function importExcel(event) {
     reader.readAsArrayBuffer(file);
 }
 
+// Tải danh sách sản phẩm
 function loadProducts() {
     const tbody = document.querySelector("#productTable tbody");
     tbody.innerHTML = "";
@@ -69,10 +72,12 @@ function loadProducts() {
     }
 }
 
+// Lưu danh sách sản phẩm vào localStorage
 function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
 }
 
+// Tìm kiếm sản phẩm
 function searchProduct() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const filteredProducts = products.filter(product => 
@@ -81,6 +86,7 @@ function searchProduct() {
     renderProducts(filteredProducts);
 }
 
+// Hiển thị sản phẩm đã tìm kiếm
 function renderProducts(productList) {
     const tbody = document.querySelector("#productTable tbody");
     tbody.innerHTML = "";
@@ -100,12 +106,14 @@ function renderProducts(productList) {
     });
 }
 
+// Xóa sản phẩm
 function deleteProduct(index) {
     products.splice(index, 1);
     saveProducts();
     loadProducts();
 }
 
+// Chỉnh sửa sản phẩm
 function editProduct(index) {
     const product = products[index];
     const newName = prompt("Tên sản phẩm mới:", product.name);
@@ -121,6 +129,7 @@ function editProduct(index) {
     }
 }
 
+// Bán sản phẩm
 function sellProduct(index) {
     const product = products[index];
     const soldQuantity = parseInt(prompt("Nhập số lượng bán:"));
@@ -144,6 +153,7 @@ function sellProduct(index) {
     }
 }
 
+// Tải lịch sử bán hàng
 function loadSalesHistory() {
     const tbody = document.querySelector("#salesHistoryTable tbody");
     tbody.innerHTML = "";
@@ -160,27 +170,32 @@ function loadSalesHistory() {
     updateTotalRevenue();
 }
 
+// Lưu lịch sử bán hàng
 function saveSalesHistory() {
     localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
 }
 
+// Xóa lịch sử bán hàng
 function deleteSale(index) {
     salesHistory.splice(index, 1);
     saveSalesHistory();
     loadSalesHistory();
 }
 
+// Đặt lại lịch sử bán hàng
 function resetSalesHistory() {
     salesHistory = [];
     saveSalesHistory();
     loadSalesHistory();
 }
 
+// Cập nhật tổng doanh thu
 function updateTotalRevenue() {
     const totalRevenue = salesHistory.reduce((total, sale) => total + sale.revenue, 0);
     document.getElementById("totalRevenue").textContent = `${totalRevenue} VND`;
 }
 
+// Chuyển trang sản phẩm
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
@@ -197,58 +212,10 @@ function nextPage() {
     }
 }
 
-function prevSalesPage() {
-    if (currentPage > 1) {
-        currentPage--;
-        loadSalesHistory();
-        document.getElementById("currentSalesPage").textContent = `Trang ${currentPage}`;
-    }
-}
-
-function nextSalesPage() {
-    if (currentPage * itemsPerPage < salesHistory.length) {
-        currentPage++;
-        loadSalesHistory();
-        document.getElementById("currentSalesPage").textContent = `Trang ${currentPage}`;
-    }
-}
-function exportSalesToPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Thiết lập tiêu đề cho PDF
-    doc.setFontSize(16);
-    doc.text("Lịch Sử Bán Hàng", 10, 10);
-    doc.setFontSize(12);
-
-    // Thêm tiêu đề các cột
-    doc.text("Tên sản phẩm", 10, 20);
-    doc.text("Số lượng đã bán", 60, 20);
-    doc.text("Thành tiền (VND)", 110, 20);
-    doc.text("Thời gian bán", 160, 20);
-
-    let yPos = 30; // Vị trí Y khởi đầu cho dữ liệu
-
-    salesHistory.forEach((sale, index) => {
-        // Thêm dữ liệu cho mỗi dòng lịch sử bán hàng
-        doc.text(sale.name, 10, yPos);
-        doc.text(sale.quantity.toString(), 60, yPos);
-        doc.text(sale.revenue.toString(), 110, yPos);
-        doc.text(sale.time, 160, yPos);
-
-        yPos += 10; // Tăng vị trí Y cho dòng tiếp theo
-    });
-
-    // Xuất PDF
-    doc.save("Lich_Su_Ban_Hang.pdf");
-}
-
+// Khởi tạo dữ liệu khi tải trang
 window.onload = function () {
-    // Tải danh sách sản phẩm từ localStorage
     products = JSON.parse(localStorage.getItem('products')) || [];
     salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
-    
-    // Hiển thị lại danh sách sản phẩm và lịch sử bán hàng
     loadProducts();
     loadSalesHistory();
 };
