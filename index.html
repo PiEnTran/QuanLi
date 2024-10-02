@@ -16,6 +16,12 @@
                 // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
                 window.location.href = 'login.html';
             }
+
+            // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng
+            products = JSON.parse(localStorage.getItem('products')) || [];
+            salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+            loadProducts();
+            loadSalesHistory();
         };
 
         function logout() {

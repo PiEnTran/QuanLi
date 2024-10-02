@@ -3,21 +3,7 @@ let salesHistory = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 
-function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-
-    // Kiểm tra tên đăng nhập và mật khẩu
-    if (username === 'PiEn' && password === '1234567') {
-        localStorage.setItem('loggedIn', 'true'); // Lưu trạng thái đăng nhập
-        alert('Đăng nhập thành công!');
-        window.location.href = 'index.html'; // Chuyển đến trang chính
-    } else {
-        alert('Tên đăng nhập hoặc mật khẩu không đúng.');
-    }
-}
-
-// Thêm sản phẩm
+// Hàm thêm sản phẩm
 function addProduct() {
     const name = document.getElementById('productName').value;
     const price = parseFloat(document.getElementById('productPrice').value);
@@ -84,6 +70,7 @@ function loadProducts() {
             </td>
         `;
     }
+    updatePagination();
 }
 
 // Lưu danh sách sản phẩm vào localStorage
@@ -91,80 +78,30 @@ function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
 }
 
-// Tìm kiếm sản phẩm
-function searchProduct() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const filteredProducts = products.filter(product => 
-        product.name.toLowerCase().includes(searchTerm)
-    );
-    renderProducts(filteredProducts);
-}
-
-// Hiển thị sản phẩm đã tìm kiếm
-function renderProducts(productList) {
-    const tbody = document.querySelector("#productTable tbody");
-    tbody.innerHTML = "";
-    productList.forEach((product, index) => {
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${product.name}</td>
-            <td>${product.price}</td>
-            <td>${product.quantity}</td>
-            <td>${product.price * product.quantity}</td>
-            <td>
-                <button onclick="sellProduct(${index})">Bán</button>
-                <button onclick="editProduct(${index})">Chỉnh sửa</button>
-                <button onclick="deleteProduct(${index})">Xóa</button>
-            </td>
-        `;
-    });
-}
-
-// Xóa sản phẩm
-function deleteProduct(index) {
-    products.splice(index, 1);
-    saveProducts();
-    loadProducts();
-}
-
-// Chỉnh sửa sản phẩm
-function editProduct(index) {
-    const product = products[index];
-    const newName = prompt("Tên sản phẩm mới:", product.name);
-    const newPrice = parseFloat(prompt("Giá mới (VND):", product.price));
-    const newQuantity = parseInt(prompt("Số lượng mới:", product.quantity));
-
-    if (newName && newPrice > 0 && newQuantity > 0) {
-        products[index] = { name: newName, price: newPrice, quantity: newQuantity };
-        saveProducts();
-        loadProducts();
-    } else {
-        alert("Thông tin sản phẩm không hợp lệ.");
-    }
-}
-
 // Bán sản phẩm
 function sellProduct(index) {
-    const product = products[index];
-    const soldQuantity = parseInt(prompt("Nhập số lượng bán:"));
-
-    if (soldQuantity > 0 && soldQuantity <= product.quantity) {
-        const revenue = soldQuantity * product.price;
-        product.quantity -= soldQuantity;
-
-        const sale = {
-            name: product.name,
-            quantity: soldQuantity,
-            revenue: revenue,
+    const quantitySold = parseInt(prompt("Nhập số lượng bán:"));
+    if (quantitySold > 0 && quantitySold <= products[index].quantity) {
+        products[index].quantity -= quantitySold;
+        salesHistory.push({
+            name: products[index].name,
+            quantity: quantitySold,
+            total: products[index].price * quantitySold,
             time: new Date().toLocaleString()
-        };
-        salesHistory.push(sale);
+        });
+        saveProducts();
         saveSalesHistory();
         loadProducts();
         loadSalesHistory();
+        alert("Bán hàng thành công!");
     } else {
         alert("Số lượng bán không hợp lệ.");
     }
+}
+
+// Lưu lịch sử bán hàng vào localStorage
+function saveSalesHistory() {
+    localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
 }
 
 // Tải lịch sử bán hàng
@@ -176,17 +113,26 @@ function loadSalesHistory() {
         row.innerHTML = `
             <td>${sale.name}</td>
             <td>${sale.quantity}</td>
-            <td>${sale.revenue}</td>
+            <td>${sale.total}</td>
             <td>${sale.time}</td>
             <td><button onclick="deleteSale(${index})">Xóa</button></td>
         `;
     });
-    updateTotalRevenue();
+    calculateTotalRevenue();
+    updateSalesPagination();
 }
 
-// Lưu lịch sử bán hàng
-function saveSalesHistory() {
-    localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+// Tính tổng doanh thu
+function calculateTotalRevenue() {
+    const total = salesHistory.reduce((sum, sale) => sum + sale.total, 0);
+    document.getElementById('totalRevenue').innerText = `${total} VND`;
+}
+
+// Xóa sản phẩm
+function deleteProduct(index) {
+    products.splice(index, 1);
+    saveProducts();
+    loadProducts();
 }
 
 // Xóa lịch sử bán hàng
@@ -196,46 +142,101 @@ function deleteSale(index) {
     loadSalesHistory();
 }
 
-// Đặt lại lịch sử bán hàng
+// Tìm kiếm sản phẩm
+function searchProduct() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const filteredProducts = products.filter(product => product.name.toLowerCase().includes(input));
+    
+    const tbody = document.querySelector("#productTable tbody");
+    tbody.innerHTML = "";
+    filteredProducts.forEach(product => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${product.name}</td>
+            <td>${product.price}</td>
+            <td>${product.quantity}</td>
+            <td>${product.price * product.quantity}</td>
+            <td>
+                <button onclick="sellProduct(${products.indexOf(product)})">Bán</button>
+                <button onclick="editProduct(${products.indexOf(product)})">Chỉnh sửa</button>
+                <button onclick="deleteProduct(${products.indexOf(product)})">Xóa</button>
+            </td>
+        `;
+    });
+}
+
+// Phân trang sản phẩm
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        loadProducts();
+    }
+}
+
+function nextPage() {
+    if (currentPage < Math.ceil(products.length / itemsPerPage)) {
+        currentPage++;
+        loadProducts();
+    }
+}
+
+// Cập nhật hiển thị phân trang
+function updatePagination() {
+    document.getElementById('currentPage').innerText = `Trang ${currentPage}`;
+}
+
+// Phân trang lịch sử bán hàng
+let currentSalesPage = 1;
+
+function prevSalesPage() {
+    if (currentSalesPage > 1) {
+        currentSalesPage--;
+        loadSalesHistory();
+    }
+}
+
+function nextSalesPage() {
+    if (currentSalesPage < Math.ceil(salesHistory.length / itemsPerPage)) {
+        currentSalesPage++;
+        loadSalesHistory();
+    }
+}
+
+// Cập nhật hiển thị phân trang lịch sử
+function updateSalesPagination() {
+    document.getElementById('currentSalesPage').innerText = `Trang ${currentSalesPage}`;
+}
+
+// Xóa lịch sử bán hàng
 function resetSalesHistory() {
     salesHistory = [];
     saveSalesHistory();
     loadSalesHistory();
 }
 
-// Cập nhật tổng doanh thu
-function updateTotalRevenue() {
-    const totalRevenue = salesHistory.reduce((total, sale) => total + sale.revenue, 0);
-    document.getElementById("totalRevenue").textContent = `${totalRevenue} VND`;
-}
+// Chỉnh sửa sản phẩm
+function editProduct(index) {
+    const name = prompt("Nhập tên sản phẩm mới:", products[index].name);
+    const price = prompt("Nhập giá mới:", products[index].price);
+    const quantity = prompt("Nhập số lượng mới:", products[index].quantity);
 
-// Chuyển trang sản phẩm
-function prevPage() {
-    if (currentPage > 1) {
-        currentPage--;
+    if (name && price > 0 && quantity >= 0) {
+        products[index] = { name, price: parseFloat(price), quantity: parseInt(quantity) };
+        saveProducts();
         loadProducts();
-        document.getElementById("currentPage").textContent = `Trang ${currentPage}`;
+    } else {
+        alert("Thông tin nhập không hợp lệ.");
     }
 }
 
-function nextPage() {
-    if (currentPage * itemsPerPage < products.length) {
-        currentPage++;
-        loadProducts();
-        document.getElementById("currentPage").textContent = `Trang ${currentPage}`;
+// Kiểm tra trạng thái đăng nhập
+window.onload = function() {
+    const loggedIn = localStorage.getItem('loggedIn');
+    if (loggedIn !== 'true') {
+        window.location.href = 'login.html';
     }
-}
-// Đăng xuất
-function logout() {
-    // Xóa thông tin người dùng trong localStorage (nếu cần)
-    localStorage.removeItem('user');
 
-    // Chuyển hướng về trang đăng nhập (thay đổi đường dẫn nếu cần)
-    window.location.href = 'login.html';
-}
-
-// Khởi tạo dữ liệu khi tải trang
-window.onload = function () {
+    // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng
     products = JSON.parse(localStorage.getItem('products')) || [];
     salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
     loadProducts();
