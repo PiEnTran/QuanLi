@@ -211,6 +211,14 @@ function nextPage() {
         document.getElementById("currentPage").textContent = `Trang ${currentPage}`;
     }
 }
+// Đăng xuất
+function logout() {
+    // Xóa thông tin người dùng trong localStorage (nếu cần)
+    localStorage.removeItem('user');
+
+    // Chuyển hướng về trang đăng nhập (thay đổi đường dẫn nếu cần)
+    window.location.href = 'login.html';
+}
 
 // Khởi tạo dữ liệu khi tải trang
 window.onload = function () {

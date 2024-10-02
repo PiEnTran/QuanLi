@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login.css"> <!-- Liên kết tới tệp CSS -->
+    <title>Đăng Nhập</title>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Đăng Nhập</h1>
+        <div class="input-group">
+            <label for="username">Tên Đăng Nhập:</label>
+            <input type="text" id="username" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <label for="password">Mật Khẩu:</label>
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <button class="login-btn" onclick="login()">Đăng Nhập</button>
+        <div class="register-link">
+            <p>Bạn chưa có tài khoản? <a href="#">Đăng ký</a></p>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Kiểm tra tên đăng nhập và mật khẩu
+            if (username === 'PiEn' && password === '1234567') {
+                alert('Đăng nhập thành công!');
+                window.location.href = 'index.html'; // Chuyển đến trang chính
+            } else {
+                alert('Tên đăng nhập hoặc mật khẩu không đúng.');
+            }
+        }
+    </script>
+</body>
+</html>

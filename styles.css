@@ -57,7 +57,7 @@ h1 {
 .product-btn:hover, .upload-btn:hover {
     background-color: #007bff;
 }
-.clear-btn:hover{
+.clear-btn:hover {
     background-color: rgb(221, 23, 23);
 }
 table {
@@ -118,6 +118,35 @@ th {
     margin-top: 20px;
 }
 
+.auth-section {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth-section input {
+    margin: 5px;
+    padding: 10px;
+    width: 80%;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+.auth-btn {
+    background-color: #1c6ec6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.auth-btn:hover {
+    background-color: #007bff;
+}
+
 @media (max-width: 600px) {
     .product-form {
         flex-direction: column;
@@ -138,8 +167,8 @@ th {
         max-width: 100%;
         margin: 5px 0;
     }
-    
 }
+
 .export-btn {
     background-color: #28a745;
     color: white;
