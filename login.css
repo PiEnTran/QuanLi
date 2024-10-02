@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: 'Times New Roman', Times, serif;
-    background-color: #f0f2f5;
+    background-color: #3f8fc9;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,7 +12,7 @@ body {
     width: 350px;
     padding: 20px;
     border-radius: 10px;
-    background: linear-gradient(135deg, #007bff, #6c757d);
+    background: linear-gradient(135deg, #65adfa, #6c757d);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     color: white; /* Đổi màu chữ cho dễ đọc */
 }
@@ -23,7 +23,7 @@ body {
 }
 
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .input-group label {
@@ -42,13 +42,12 @@ body {
 
 .input-group input:focus {
     outline: none;
-    border: 2px solid #fff; /* Đổi màu viền khi focus */
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .login-btn {
-    width: 100%;
-    padding: 10px;
+    width: 30%;
+    padding: 8px;
     background-color: #28a745; /* Màu xanh lá cho nút đăng nhập */
     color: #fff;
     border: none;
@@ -59,7 +58,7 @@ body {
 }
 
 .login-btn:hover {
-    background-color: #218838; /* Thay đổi màu khi hover */
+    background-color: #389d1f; /* Thay đổi màu khi hover */
 }
 
 .register-link {
