@@ -3,6 +3,20 @@ let salesHistory = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    // Kiểm tra tên đăng nhập và mật khẩu
+    if (username === 'PiEn' && password === '1234567') {
+        localStorage.setItem('loggedIn', 'true'); // Lưu trạng thái đăng nhập
+        alert('Đăng nhập thành công!');
+        window.location.href = 'index.html'; // Chuyển đến trang chính
+    } else {
+        alert('Tên đăng nhập hoặc mật khẩu không đúng.');
+    }
+}
+
 // Thêm sản phẩm
 function addProduct() {
     const name = document.getElementById('productName').value;
