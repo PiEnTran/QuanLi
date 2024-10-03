@@ -229,14 +229,15 @@ function editProduct(index) {
     }
 }
 
-// Kiểm tra trạng thái đăng nhập
 window.onload = function() {
+    // Kiểm tra trạng thái đăng nhập trước khi tải bất cứ thứ gì
     const loggedIn = localStorage.getItem('loggedIn');
     if (loggedIn !== 'true') {
         window.location.href = 'login.html';
+        return; // Dừng việc tải nội dung nếu chưa đăng nhập
     }
 
-    // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng
+    // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng sau khi xác nhận đã đăng nhập
     products = JSON.parse(localStorage.getItem('products')) || [];
     salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
     loadProducts();
