@@ -1,23 +1,3 @@
-// Nhập các chức năng Firestore từ Firebase SDK
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-// Cấu hình Firebase
-const firebaseConfig = {
-    apiKey: 'AIzaSyBikkw-J4Ze4LmbuFivf4et_lOf16lD2mI',
-    authDomain: 'quanlisp-91d9d.firebaseapp.com',
-    databaseURL: 'https://quanlisp-91d9d-default-rtdb.firebaseio.com',
-    projectId: 'quanlisp-91d9d',
-    storageBucket: 'quanlisp-91d9d.appspot.com',
-    messagingSenderId: '1089855252032',
-    appId: '1:1089855252032:web:84d70af66fdaa44c16e1a5',
-    measurementId: 'G-ZHJ70NEQ6H'
-};
-
-// Khởi tạo Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 let products = [];
 let salesHistory = [];
 let currentPage = 1;
@@ -35,18 +15,19 @@ async function addProduct() {
     }
 
     const product = { name, price, quantity };
+    products.push(product);
     
     // Thêm sản phẩm vào Firestore
     await addProductToFirestore(product);
     
     alert("Sản phẩm đã được thêm thành công!"); // Thông báo thành công
-    loadProducts();
+    loadProducts(); // Tải lại danh sách sản phẩm
 }
 
 // Thêm sản phẩm vào Firestore
 async function addProductToFirestore(product) {
     try {
-        const docRef = await addDoc(collection(db, 'products'), product);
+        const docRef = await db.collection('products').add(product);
         console.log("Sản phẩm đã được thêm với ID: ", docRef.id);
     } catch (error) {
         console.error("Lỗi khi thêm sản phẩm: ", error);
@@ -71,6 +52,7 @@ function importExcel(event) {
             const [name, price, quantity] = row;
             if (name && price > 0 && quantity > 0) {
                 const product = { name, price: parseFloat(price), quantity: parseInt(quantity) };
+                products.push(product);
                 addProductToFirestore(product) // Thêm sản phẩm vào Firestore
                     .catch(error => {
                         console.error("Lỗi khi thêm sản phẩm từ Excel: ", error);
@@ -79,20 +61,19 @@ function importExcel(event) {
             }
         });
         
-        loadProducts();
+        loadProducts(); // Tải lại danh sách sản phẩm sau khi nhập
     };
 
     reader.readAsArrayBuffer(file);
 }
 
 // Tải danh sách sản phẩm từ Firestore
-function loadProducts() {
+async function loadProducts() {
     const tbody = document.querySelector("#productTable tbody");
     tbody.innerHTML = ""; // Xóa nội dung trước đó
 
     // Lắng nghe thay đổi trong bộ sưu tập 'products'
-    const productsCollection = collection(db, 'products');
-    onSnapshot(productsCollection, (snapshot) => {
+    db.collection('products').onSnapshot((snapshot) => {
         tbody.innerHTML = ""; // Xóa nội dung trước đó mỗi lần cập nhật
 
         snapshot.forEach((doc) => {
@@ -116,10 +97,10 @@ function loadProducts() {
 // Bán sản phẩm
 async function sellProduct(productId) {
     const quantitySold = parseInt(prompt("Nhập số lượng bán:"));
-    const productRef = doc(db, 'products', productId);
-    const productSnapshot = await getDocs(productRef);
+    const productRef = db.collection('products').doc(productId);
+    const productSnapshot = await productRef.get();
     
-    if (productSnapshot.exists()) {
+    if (productSnapshot.exists) {
         const product = productSnapshot.data();
         if (quantitySold > product.quantity) {
             alert("Số lượng bán không được lớn hơn số lượng tồn kho.");
@@ -127,7 +108,7 @@ async function sellProduct(productId) {
         }
 
         // Cập nhật số lượng tồn kho
-        await updateDoc(productRef, {
+        await productRef.update({
             quantity: product.quantity - quantitySold
         });
 
@@ -138,6 +119,7 @@ async function sellProduct(productId) {
             total: quantitySold * product.price,
             timestamp: new Date()
         };
+        salesHistory.push(sale);
         await addSaleToFirestore(sale); // Thêm giao dịch vào Firestore
         loadSalesHistory(); // Tải lại lịch sử bán hàng
         loadProducts(); // Tải lại danh sách sản phẩm
@@ -147,7 +129,7 @@ async function sellProduct(productId) {
 // Thêm giao dịch bán hàng vào Firestore
 async function addSaleToFirestore(sale) {
     try {
-        await addDoc(collection(db, 'sales'), sale);
+        await db.collection('sales').add(sale);
     } catch (error) {
         console.error("Lỗi khi thêm giao dịch bán hàng: ", error);
     }
@@ -158,8 +140,7 @@ async function loadSalesHistory() {
     const tbody = document.querySelector("#salesHistoryTable tbody");
     tbody.innerHTML = "";
 
-    const salesCollection = collection(db, 'sales');
-    const querySnapshot = await getDocs(salesCollection);
+    const querySnapshot = await db.collection('sales').get();
     let totalRevenue = 0;
 
     querySnapshot.forEach((doc) => {
@@ -180,10 +161,9 @@ async function loadSalesHistory() {
     document.getElementById('totalRevenue').innerText = `${totalRevenue} VND`;
 }
 
-// Xóa sản phẩm
 async function deleteProduct(productId) {
     if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-        await deleteDoc(doc(db, 'products', productId));
+        await db.collection('products').doc(productId).delete();
         alert("Sản phẩm đã được xóa thành công!"); // Thông báo thành công
         loadProducts(); // Tải lại danh sách sản phẩm
     }
@@ -192,7 +172,7 @@ async function deleteProduct(productId) {
 // Xóa giao dịch bán hàng
 async function deleteSale(saleId) {
     if (confirm("Bạn có chắc chắn muốn xóa giao dịch này?")) {
-        await deleteDoc(doc(db, 'sales', saleId));
+        await db.collection('sales').doc(saleId).delete();
         loadSalesHistory(); // Tải lại lịch sử bán hàng
     }
 }
@@ -217,18 +197,12 @@ function searchProduct() {
 async function resetSalesHistory() {
     const confirmReset = confirm("Bạn có chắc chắn muốn xóa tất cả lịch sử bán hàng?");
     if (confirmReset) {
-        const salesRef = collection(db, 'sales');
-        const snapshot = await getDocs(salesRef);
+        const salesRef = db.collection('sales');
+        const snapshot = await salesRef.get();
         snapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
+            await salesRef.doc(doc.id).delete();
         });
         salesHistory = []; // Đặt lại mảng lịch sử bán hàng
         loadSalesHistory(); // Tải lại lịch sử bán hàng
     }
 }
-
-// Hàm khởi động
-window.onload = function () {
-    loadProducts();
-    loadSalesHistory();
-};
