@@ -6,7 +6,6 @@
     <title>Quản Lý Sản Phẩm</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <!-- Firebase Configuration -->
     <script type="module">
@@ -43,8 +42,8 @@
             }
 
             // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng
-            products = JSON.parse(localStorage.getItem('products')) || [];
-            salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+            products = [];
+            salesHistory = [];
             loadProducts();
             loadSalesHistory();
         };
@@ -54,8 +53,6 @@
             window.location.href = 'login.html'; // Chuyển hướng về trang đăng nhập
         }
     </script>
-</head>
-<body>
     <div class="container">
         <h1>Quản Lý Sản Phẩm</h1>
 
