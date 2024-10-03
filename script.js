@@ -4,7 +4,7 @@ let currentPage = 1;
 let itemsPerPage = 10;
 
 // Hàm thêm sản phẩm
-function addProduct() {
+async function addProduct() {
     const name = document.getElementById('productName').value;
     const price = parseFloat(document.getElementById('productPrice').value);
     const quantity = parseInt(document.getElementById('productQuantity').value);
@@ -16,8 +16,22 @@ function addProduct() {
 
     const product = { name, price, quantity };
     products.push(product);
+    
+    // Thêm sản phẩm vào Firestore
+    await addProductToFirestore(product);
+    
     saveProducts();
     loadProducts();
+}
+
+// Thêm sản phẩm vào Firestore
+async function addProductToFirestore(product) {
+    try {
+        const docRef = await db.collection('products').add(product);
+        console.log("Sản phẩm đã được thêm với ID: ", docRef.id);
+    } catch (error) {
+        console.error("Lỗi khi thêm sản phẩm: ", error);
+    }
 }
 
 // Nhập sản phẩm từ file Excel
@@ -49,7 +63,7 @@ function importExcel(event) {
 }
 
 // Tải danh sách sản phẩm
-function loadProducts() {
+async function loadProducts() {
     const tbody = document.querySelector("#productTable tbody");
     tbody.innerHTML = "";
     const start = (currentPage - 1) * itemsPerPage;
@@ -220,26 +234,22 @@ function editProduct(index) {
     const price = prompt("Nhập giá mới:", products[index].price);
     const quantity = prompt("Nhập số lượng mới:", products[index].quantity);
 
-    if (name && price > 0 && quantity >= 0) {
-        products[index] = { name, price: parseFloat(price), quantity: parseInt(quantity) };
-        saveProducts();
-        loadProducts();
-    } else {
-        alert("Thông tin nhập không hợp lệ.");
-    }
+    if (name) products[index].name = name;
+    if (price) products[index].price = parseFloat(price);
+    if (quantity) products[index].quantity = parseInt(quantity);
+
+    saveProducts();
+    loadProducts();
 }
 
+// Khi tải trang, lấy danh sách sản phẩm và lịch sử bán hàng từ localStorage
 window.onload = function() {
-    // Kiểm tra trạng thái đăng nhập trước khi tải bất cứ thứ gì
-    const loggedIn = localStorage.getItem('loggedIn');
-    if (loggedIn !== 'true') {
-        window.location.href = 'login.html';
-        return; // Dừng việc tải nội dung nếu chưa đăng nhập
-    }
-
-    // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng sau khi xác nhận đã đăng nhập
-    products = JSON.parse(localStorage.getItem('products')) || [];
-    salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+    const storedProducts = localStorage.getItem('products');
+    const storedSalesHistory = localStorage.getItem('salesHistory');
+    
+    if (storedProducts) products = JSON.parse(storedProducts);
+    if (storedSalesHistory) salesHistory = JSON.parse(storedSalesHistory);
+    
     loadProducts();
     loadSalesHistory();
 };

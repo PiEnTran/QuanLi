@@ -8,15 +8,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <script>
-        // Kiểm tra đăng nhập ngay lập tức khi trang được tải
-        const loggedIn = localStorage.getItem('loggedIn');
-        if (loggedIn !== 'true') {
-            window.location.href = 'login.html'; // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
-        }
+    <!-- Firebase Configuration -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBikkw-J4Ze4LmbuFivf4et_lOf16lD2mI",
+        authDomain: "quanlisp-91d9d.firebaseapp.com",
+        databaseURL: "https://quanlisp-91d9d-default-rtdb.firebaseio.com",
+        projectId: "quanlisp-91d9d",
+        storageBucket: "quanlisp-91d9d.appspot.com",
+        messagingSenderId: "1089855252032",
+        appId: "1:1089855252032:web:84d70af66fdaa44c16e1a5",
+        measurementId: "G-ZHJ70NEQ6H"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const db = getFirestore(app); // Initialize Firestore
+    </script>
+</head>
+<body>
+    <script>
+        // Kiểm tra xem người dùng đã đăng nhập chưa
         window.onload = function() {
-            // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng khi trang đã được tải
+            const loggedIn = localStorage.getItem('loggedIn');
+            if (loggedIn !== 'true') {
+                // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+                window.location.href = 'login.html';
+            }
+
+            // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng
             products = JSON.parse(localStorage.getItem('products')) || [];
             salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
             loadProducts();
