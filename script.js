@@ -24,7 +24,6 @@ async function addProduct() {
     loadProducts();
 }
 
-
 // Thêm sản phẩm vào Firestore
 async function addProductToFirestore(product) {
     try {
@@ -93,7 +92,6 @@ async function loadProducts() {
             `;
         });
     });
-
 }
 
 // Bán sản phẩm
@@ -170,7 +168,6 @@ async function deleteProduct(productId) {
         loadProducts(); // Tải lại danh sách sản phẩm
     }
 }
-
 
 // Xóa giao dịch bán hàng
 async function deleteSale(saleId) {

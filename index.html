@@ -28,7 +28,8 @@
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
-      const db = getFirestore(app); // Initialize Firestore
+      // Định nghĩa db trong phạm vi toàn cục
+      window.db = getFirestore(app); // Initialize Firestore và lưu vào window
     </script>
 </head>
 <body>
