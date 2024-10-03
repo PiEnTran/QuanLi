@@ -9,15 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-        // Kiểm tra xem người dùng đã đăng nhập chưa
-        window.onload = function() {
-            const loggedIn = localStorage.getItem('loggedIn');
-            if (loggedIn !== 'true') {
-                // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-                window.location.href = 'login.html';
-            }
+        // Kiểm tra đăng nhập ngay lập tức khi trang được tải
+        const loggedIn = localStorage.getItem('loggedIn');
+        if (loggedIn !== 'true') {
+            window.location.href = 'login.html'; // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+        }
 
-            // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng
+        window.onload = function() {
+            // Khởi tạo dữ liệu sản phẩm và lịch sử bán hàng khi trang đã được tải
             products = JSON.parse(localStorage.getItem('products')) || [];
             salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
             loadProducts();
